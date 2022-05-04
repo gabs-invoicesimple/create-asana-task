@@ -1,11 +1,16 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Create Asana Task'
+description: 'Creates an Asana task for the current commit'
+author: 'Gabs <gabs@invoicesimple.com>'
 inputs:
-  milliseconds: # change this
+  access_token:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'Asana access token'
+  workspace_id:
+    required: true
+    description: 'Asana Workspace ID'
+  project_id:
+    required: true
+    description: 'Asana Project ID'
 runs:
   using: 'node16'
   main: 'dist/index.js'
