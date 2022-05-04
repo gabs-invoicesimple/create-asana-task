@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./
+      - uses: gabs-invoicesimple/create-asana-task@v2
         with:
           access_token: ${{ secrets.ACCESS_TOKEN }}
           project_id: ${{ secrets.PROJECT_ID }}
