@@ -18,9 +18,16 @@ async function run(): Promise<void> {
     core.debug(new Date().toTimeString())
 
     const task = await client.tasks.createInWorkspace(workspaceId, {name})
+
+    core.debug(JSON.stringify(task, null, 2))
+
     const taskId = task.gid
 
-    await client.tasks.addProject(taskId, {project: projectId})
+    const addProjectResult = await client.tasks.addProject(taskId, {
+      project: projectId
+    })
+
+    core.debug(JSON.stringify(addProjectResult, null, 2))
 
     core.setOutput('result', 'Completed!')
   } catch (error) {
