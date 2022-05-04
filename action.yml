@@ -1,4 +1,4 @@
-name: 'Create Asana Task'
+name: 'create-asana-task'
 description: 'Creates an Asana task for the current commit'
 author: 'Gabs <gabs@invoicesimple.com>'
 inputs:

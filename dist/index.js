@@ -66,6 +66,7 @@ function run() {
             core.setOutput('result', 'Completed!');
         }
         catch (error) {
+            core.debug(JSON.stringify(error, null, 2));
             if (error instanceof Error)
                 core.setFailed(error.message);
         }
