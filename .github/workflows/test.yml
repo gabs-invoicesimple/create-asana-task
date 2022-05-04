@@ -21,6 +21,6 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          access_token: ${{ ACCESS_TOKEN }}
-          project_id: ${{ PROJECT_ID }}
-          workspace_id: ${{ WORKSPACE_ID }}
+          access_token: ${{ secrets.ACCESS_TOKEN }}
+          project_id: ${{ secrets.PROJECT_ID }}
+          workspace_id: ${{ secrets.WORKSPACE_ID }}
