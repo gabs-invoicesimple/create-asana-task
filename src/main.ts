@@ -1,16 +1,28 @@
+import * as asana from 'asana'
 import * as core from '@actions/core'
-import {wait} from './wait'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+    const {ACCESS_TOKEN, WORKSPACE_ID, PROJECT_ID} = process.env
+
+    const accessToken = core.getInput('access_token') || ACCESS_TOKEN || ''
+    const name = core.getInput('task_name') || 'New task'
+    const workspaceId = core.getInput('workspace_id') || WORKSPACE_ID || ''
+    const projectId = core.getInput('project_id') || PROJECT_ID || ''
+
+    const client = asana.Client.create().useAccessToken(accessToken)
 
     core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
 
-    core.setOutput('time', new Date().toTimeString())
+    const task = await client.tasks.createInWorkspace(workspaceId, {name})
+    const taskId = task.gid
+
+    await client.tasks.addProject(taskId, {project: projectId})
+
+    core.setOutput('result', 'Completed!')
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
