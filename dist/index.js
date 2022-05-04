@@ -57,8 +57,12 @@ function run() {
             const client = asana.Client.create().useAccessToken(accessToken);
             core.debug(new Date().toTimeString());
             const task = yield client.tasks.createInWorkspace(workspaceId, { name });
+            core.debug(JSON.stringify(task, null, 2));
             const taskId = task.gid;
-            yield client.tasks.addProject(taskId, { project: projectId });
+            const addProjectResult = yield client.tasks.addProject(taskId, {
+                project: projectId
+            });
+            core.debug(JSON.stringify(addProjectResult, null, 2));
             core.setOutput('result', 'Completed!');
         }
         catch (error) {
