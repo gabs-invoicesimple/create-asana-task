@@ -1,3 +1,4 @@
+// eslint-disable-next-line filenames/match-regex
 import {expect, test} from '@jest/globals'
 
 // shows how the runner will run a javascript action with env / stdout protocol
