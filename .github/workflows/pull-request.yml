@@ -1,0 +1,13 @@
+name: 'pull-request'
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  notify-asana:
+    runs-on: ubuntu-latest
+    steps:
+      uses: gabs-invoicesimple/create-asana-task
