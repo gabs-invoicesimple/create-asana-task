@@ -19,8 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: gabs-invoicesimple/create-asana-task@v2
+      - uses: ./
         with:
+          task_name: 'Test Github Actions'
+          task_description: 'This is a test description'
           access_token: ${{ secrets.ACCESS_TOKEN }}
           project_id: ${{ secrets.PROJECT_ID }}
           workspace_id: ${{ secrets.WORKSPACE_ID }}

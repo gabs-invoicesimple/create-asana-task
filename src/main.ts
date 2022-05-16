@@ -4,32 +4,50 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
+function setupClient(accessToken: string): asana.Client {
+  return asana.Client.create().useAccessToken(accessToken)
+}
+
+async function createTask(
+  client: asana.Client,
+  workspaceId: string,
+  name: string,
+  projectId: string,
+  description = ''
+): Promise<asana.resources.Tasks.Type> {
+  const task = await client.tasks.createInWorkspace(workspaceId, {
+    name,
+    notes: description
+  })
+
+  await client.tasks.addProject(task.gid, {
+    project: projectId
+  })
+
+  return task
+}
+
 async function run(): Promise<void> {
   try {
     const {ACCESS_TOKEN, WORKSPACE_ID, PROJECT_ID} = process.env
 
     const accessToken = core.getInput('access_token') || ACCESS_TOKEN || ''
     const name = core.getInput('task_name') || 'New task'
+    const description = core.getInput('task_description') || ''
     const workspaceId = core.getInput('workspace_id') || WORKSPACE_ID || ''
     const projectId = core.getInput('project_id') || PROJECT_ID || ''
 
-    const client = asana.Client.create().useAccessToken(accessToken)
+    const client = setupClient(accessToken)
 
-    core.debug(new Date().toTimeString())
+    const task = await createTask(
+      client,
+      workspaceId,
+      name,
+      projectId,
+      description
+    )
 
-    const task = await client.tasks.createInWorkspace(workspaceId, {name})
-
-    core.debug(JSON.stringify(task, null, 2))
-
-    const taskId = task.gid
-
-    const addProjectResult = await client.tasks.addProject(taskId, {
-      project: projectId
-    })
-
-    core.debug(JSON.stringify(addProjectResult, null, 2))
-
-    core.setOutput('result', 'Completed!')
+    core.setOutput('task_id', task.gid)
   } catch (error) {
     core.debug(JSON.stringify(error, null, 2))
     if (error instanceof Error) core.setFailed(error.message)

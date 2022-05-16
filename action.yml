@@ -2,15 +2,24 @@ name: 'create-asana-task'
 description: 'Creates an Asana task for the current commit'
 author: 'Gabs <gabs@invoicesimple.com>'
 inputs:
+  task_name:
+    required: true
+    description: 'Task Name'
+  task_description:
+    required: false
+    description: 'Task Description'
   access_token:
-    required: true
-    description: 'Asana access token'
+    required: false
+    description: 'Asana access token (infer from secret if not passed)'
   workspace_id:
-    required: true
-    description: 'Asana Workspace ID'
+    required: false
+    description: 'Asana Workspace ID (infer from secret if not passed)'
   project_id:
-    required: true
-    description: 'Asana Project ID'
+    required: false
+    description: 'Asana Project ID (infer from secret if not passed)'
+outputs:
+  task_id:
+    description: 'The created task ID'
 runs:
   using: 'node16'
   main: 'dist/index.js'
