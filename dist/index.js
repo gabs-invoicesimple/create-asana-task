@@ -46,24 +46,33 @@ const asana = __importStar(__nccwpck_require__(3565));
 const core = __importStar(__nccwpck_require__(2186));
 const dotenv_1 = __importDefault(__nccwpck_require__(2437));
 dotenv_1.default.config();
+function setupClient(accessToken) {
+    return asana.Client.create().useAccessToken(accessToken);
+}
+function createTask(client, workspaceId, name, projectId, description = '') {
+    return __awaiter(this, void 0, void 0, function* () {
+        const task = yield client.tasks.createInWorkspace(workspaceId, {
+            name,
+            notes: description
+        });
+        yield client.tasks.addProject(task.gid, {
+            project: projectId
+        });
+        return task;
+    });
+}
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { ACCESS_TOKEN, WORKSPACE_ID, PROJECT_ID } = process.env;
             const accessToken = core.getInput('access_token') || ACCESS_TOKEN || '';
             const name = core.getInput('task_name') || 'New task';
+            const description = core.getInput('task_description') || '';
             const workspaceId = core.getInput('workspace_id') || WORKSPACE_ID || '';
             const projectId = core.getInput('project_id') || PROJECT_ID || '';
-            const client = asana.Client.create().useAccessToken(accessToken);
-            core.debug(new Date().toTimeString());
-            const task = yield client.tasks.createInWorkspace(workspaceId, { name });
-            core.debug(JSON.stringify(task, null, 2));
-            const taskId = task.gid;
-            const addProjectResult = yield client.tasks.addProject(taskId, {
-                project: projectId
-            });
-            core.debug(JSON.stringify(addProjectResult, null, 2));
-            core.setOutput('result', 'Completed!');
+            const client = setupClient(accessToken);
+            const task = yield createTask(client, workspaceId, name, projectId, description);
+            core.setOutput('task_id', task.gid);
         }
         catch (error) {
             core.debug(JSON.stringify(error, null, 2));
