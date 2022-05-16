@@ -15,16 +15,25 @@ async function createTask(
   projectId: string,
   description = ''
 ): Promise<asana.resources.Tasks.Type> {
-  const task = await client.tasks.createInWorkspace(workspaceId, {
-    name,
-    notes: description
-  })
+  let task: asana.resources.Tasks.Type
+  try {
+    task = await client.tasks.createInWorkspace(workspaceId, {
+      name,
+      notes: description
+    })
+  } catch ({message}) {
+    throw new Error(`Error creating Asana task: ${message}`)
+  }
 
-  await client.tasks.addProject(task.gid, {
-    project: projectId
-  })
+  try {
+    await client.tasks.addProject(task.gid, {
+      project: projectId
+    })
 
-  return task
+    return task
+  } catch ({message}) {
+    throw new Error(`Error adding Asana task to project: ${message}`)
+  }
 }
 
 async function run(): Promise<void> {
@@ -49,7 +58,6 @@ async function run(): Promise<void> {
 
     core.setOutput('task_id', task.gid)
   } catch (error) {
-    core.debug(JSON.stringify(error, null, 2))
     if (error instanceof Error) core.setFailed(error.message)
   }
 }

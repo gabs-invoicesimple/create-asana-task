@@ -51,14 +51,25 @@ function setupClient(accessToken) {
 }
 function createTask(client, workspaceId, name, projectId, description = '') {
     return __awaiter(this, void 0, void 0, function* () {
-        const task = yield client.tasks.createInWorkspace(workspaceId, {
-            name,
-            notes: description
-        });
-        yield client.tasks.addProject(task.gid, {
-            project: projectId
-        });
-        return task;
+        let task;
+        try {
+            task = yield client.tasks.createInWorkspace(workspaceId, {
+                name,
+                notes: description
+            });
+        }
+        catch ({ message }) {
+            throw new Error(`Error creating Asana task: ${message}`);
+        }
+        try {
+            yield client.tasks.addProject(task.gid, {
+                project: projectId
+            });
+            return task;
+        }
+        catch ({ message }) {
+            throw new Error(`Error adding Asana task to project: ${message}`);
+        }
     });
 }
 function run() {
@@ -75,7 +86,6 @@ function run() {
             core.setOutput('task_id', task.gid);
         }
         catch (error) {
-            core.debug(JSON.stringify(error, null, 2));
             if (error instanceof Error)
                 core.setFailed(error.message);
         }
